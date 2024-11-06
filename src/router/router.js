@@ -1,13 +1,36 @@
 const express = require("express");
 const HttpStatus = require("../constant/HTTPStatus");
 const router = express.Router();
+
+/* 
+##################################################
+############# 1. 호출할 mock data 함수명 기재 ( mock 함수는 mockServiceIntner.js에 생성 ) 
+##################################################
+*/
 const {
   selectMockData,
   insertMockData,
   updateMockData,
   deleteMockData,
-} = require("../service/mockServiceInernal");
+} = require("../service/mockServiceInternal");
 const { getPinpayCardList } = require("../service/mockServiceExternal");
+
+const handleRoute = async (action, req, res) => {
+  try {
+    const result = await action(req);
+    res.status(HttpStatus.OK).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+  }
+};
+
+
+/* 
+##################################################
+############# 2. 호출할 mock data 함수 호출
+##################################################
+*/
 
 /**
  * 거래 내역 조회
@@ -17,16 +40,7 @@ const { getPinpayCardList } = require("../service/mockServiceExternal");
  * @return {object} 응답 데이터
  *
  */
-router.get("/v1/paylist", async (req, res) => {
-  try {
-    selectMockData(req);
-    res
-      .status(HttpStatus.OK)
-      .json({ message: "Hello Mock Server selectMockData :)" });
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.get("/v1/paylist", (req, res) => handleRoute(selectMockData, req, res));
 
 /**
  * 거래 내역 저장
@@ -36,12 +50,7 @@ router.get("/v1/paylist", async (req, res) => {
  * @return {object} 응답 데이터
  *
  */
-router.post("/v1/paylist", async (req, res) => {
-  insertMockData(req);
-  res
-    .status(HttpStatus.CREATED)
-    .json({ message: "Hello Mock Server insertMockData :)" });
-});
+router.post("/v1/paylist", (req, res) => handleRoute(insertMockData, req, res));
 
 /**
  * 거래 내역 수정
@@ -51,12 +60,7 @@ router.post("/v1/paylist", async (req, res) => {
  * @return {object} 응답 데이터
  *
  */
-router.put("/v1/paylist", async (req, res) => {
-  updateMockData(req);
-  res
-    .status(HttpStatus.OK)
-    .json({ message: "Hello Mock Server updateMockData :)" });
-});
+router.put("/v1/paylist", (req, res) => handleRoute(updateMockData, req, res));
 
 /**
  * 거래 내역 삭제
@@ -66,12 +70,7 @@ router.put("/v1/paylist", async (req, res) => {
  * @return {object} 응답 데이터
  *
  */
-router.delete("/v1/paylist", async (req, res) => {
-  deleteMockData(req);
-  res
-    .status(HttpStatus.OK)
-    .json({ message: "Hello Mock Server deleteMockData :)" });
-});
+router.delete("/v1/paylist", (req, res) => handleRoute(deleteMockData, req, res));
 
 /**
  * (외부통신) API 설명...
